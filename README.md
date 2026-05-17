@@ -1,18 +1,23 @@
 # Azure Static Website Lab
-A hands-on lab demonstrating the setup and deployment of a static website inside Azure
-Markdown
-## 🎬 Watch Me Build This Lab!
-[[Watch the full video]](https://www.loom.com/share/81d2fb1b470245889aeacc0a9ee984e0)
-# Lab 01 — Hosting a Static Website on Azure Blob Storage
 
-![Cloud](https://img.shields.io/badge/Cloud-Azure-0078D4?logo=microsoftazure&logoColor=white)
-![Service](https://img.shields.io/badge/Service-Blob%20Storage-blue)
-![Level](https://img.shields.io/badge/Level-Beginner-brightgreen)
-![Time](https://img.shields.io/badge/Time-~30%20min-lightgrey)
+> **The Build Log — Lab 001 of [N]**
+> *Hosting a static website on Azure Blob Storage. No VM. No server to patch. Just files in a container and a public URL.*
+
+[![Cloud](https://img.shields.io/badge/Cloud-Azure-0078D4?logo=microsoftazure&logoColor=white)](#)
+[![Service](https://img.shields.io/badge/Service-Blob%20Storage-blue)](#)
+[![Level](https://img.shields.io/badge/Level-Beginner-brightgreen)](#)
+[![Time](https://img.shields.io/badge/Time-~30%20min-lightgrey)](#)
+[![License](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
 > **Author:** Ralph Edouard II
-> **Lab Series:** Azure Fundamentals — Week 1
+> **Series:** The Build Log — Azure Fundamentals
 > **Status:** ✅ Completed
+
+---
+
+## 🎬 Watch Me Build This Lab
+
+[**▶ Loom walkthrough**](https://www.loom.com/share/81d2fb1b470245889aeacc0a9ee984e0)
 
 ---
 
@@ -20,7 +25,7 @@ Markdown
 
 I'm a mid-career IT SysAdmin working my way toward a Cloud Security Engineer role, and this repo is where I'm documenting the labs I do along the way. The goal isn't just to *finish* the labs — it's to write them up the way I'd want to read them if I were the next person trying to learn this stuff.
 
-This first one was a gentle intro: get a static website running on Azure without spinning up a single VM. No servers to patch, no OS to harden — just upload an HTML file and point the world at it. Good way to get comfortable clicking around the Azure Portal before things get more complicated.
+This first one is a gentle intro: get a static website running on Azure without spinning up a single VM. No servers to patch, no OS to harden — just upload an HTML file and point the world at it. Good way to get comfortable clicking around the Azure Portal before things get more complicated.
 
 ---
 
@@ -90,7 +95,7 @@ Walking through the flow:
 ## ✅ What You'll Need
 
 | Requirement | Notes |
-|---|---|
+| --- | --- |
 | Active Azure subscription | Free Tier is fine |
 | Access to the [Azure Portal](https://portal.azure.com) | — |
 | Text editor | VS Code, Notepad, TextEdit — whatever you've got |
@@ -100,15 +105,15 @@ Walking through the flow:
 
 ## 🧾 Naming Convention I Used
 
-| Resource | Value |
-|---|---|
-| Resource Group | `rg-lab01-<yourname>` |
-| Region | `East US` |
-| Storage Account | `stlab01<yourname>` |
-| Redundancy | `LRS` (Locally-Redundant Storage) |
-| Performance Tier | `Standard` |
+| Resource | Pattern | Example |
+| --- | --- | --- |
+| Resource Group | `rg-lab01-<yourname>` | `rg-lab01-ralph` |
+| Region | `East US` | — |
+| Storage Account | `stlab01<yourname><digits>` | `stlab01ralph42` |
+| Redundancy | `LRS` (Locally-Redundant Storage) | — |
+| Performance Tier | `Standard` | — |
 
-> ⚠️ **Heads up on storage account names:** they have to be globally unique across *all* of Azure, lowercase letters and numbers only, 3–24 characters, no hyphens. I tripped on this the first time I tried a name with a dash in it — Azure rejected it instantly.
+> ⚠️ **Heads up on storage account names:** they have to be globally unique across *all* of Azure, lowercase letters and numbers only, 3–24 characters, no hyphens. Globally unique means *globally unique* — common names will already be taken. Plan on tacking on a few random digits at the end, even on your first attempt. Mine got rejected the first time and I had to add digits before Azure would accept it.
 
 ---
 
@@ -129,7 +134,7 @@ Walking through the flow:
 1. Search **Storage accounts** → **+ Create**.
 2. On the **Basics** tab:
    - **Resource group:** `rg-lab01-<yourname>`
-   - **Storage account name:** `stlab01<yourname>`
+   - **Storage account name:** `stlab01<yourname><digits>`
    - **Region:** `(US) East US`
    - **Performance:** `Standard`
    - **Redundancy:** `LRS`
@@ -144,7 +149,7 @@ Walking through the flow:
    - **Index document name:** `index.html`
    - **Error document path:** `404.html`
 4. Click **Save**.
-5. **Copy the Primary endpoint URL** that appears (mine looked like `https://stlab01<yourname>.z13.web.core.windows.net/`). That's your site's public address.
+5. **Copy the Primary endpoint URL** that appears (mine looked like `https://stlab01<yourname><digits>.z13.web.core.windows.net/`). That's your site's public address.
 
 > 💡 I almost missed copying the URL the first time. Save it somewhere — you'll need it for the validation step.
 
@@ -191,7 +196,7 @@ That's the whole site, live on the internet.
 I'm still early on the cloud security side, so take these as observations rather than expert guidance. Stuff that stood out to me as I went:
 
 - **The `$web` container is anonymous-read on purpose.** That's how the whole "public website" thing works, but it did make me pause — anyone on the internet can fetch what's in there. Fine for this lab, would not be fine for anything sensitive.
-- **Secure transfer (HTTPS) is on by default** on new storage accounts. Good. I checked.
+- **Secure transfer required is enabled by default on new storage accounts** — worth confirming in the **Configuration** blade. That's also where you can enforce a minimum TLS version (1.2 is the modern baseline). Something I want to verify hands-on in a future lab.
 - **Storage account keys are powerful.** They're full account-wide credentials. I didn't need to use them for this lab, but it clicked for me why production environments push you toward Entra ID identities and SAS tokens instead.
 - **No logging by default.** If something weird happened with this storage account, I'd have no record of it unless I went and turned on diagnostic settings. Something I want to dig into in a future lab.
 - **The default endpoint has no WAF, no rate limiting, and no custom domain.** For a real site, you'd want Azure Front Door or a CDN in front of it.
@@ -200,28 +205,31 @@ Things I want to come back to once I've got more reps in.
 
 ---
 
+## 💰 What This Cost
+
+I didn't track cost formally for this one, but for the time the lab was live it was effectively pennies — Azure Blob Storage at LRS pricing is fractions of a cent per GB-month, and a couple HTML files barely register. The dangerous cost on a lab like this isn't the storage; it's **leaving it running**. See the cleanup section below.
+
+Starting **Lab 002**, I'm tracking the actual cost of every lab via the **Cost Management + Billing** blade and recording it in the README. Building the habit now so it's automatic by the time the labs get more expensive.
+
+---
+
 ## 🧰 Stuff That Tripped Me Up
 
-<details>
-<summary><strong>"404 — The requested content does not exist"</strong></summary>
+**"404 — The requested content does not exist"**
 
 The file has to be named **exactly** `index.html`. Case-sensitive. `Index.html` won't load. And it has to be in the `$web` container, not a different one you made by accident.
 
-</details>
+**"Storage account name is already taken"**
 
-<details>
-<summary><strong>"Storage account name is already taken"</strong></summary>
+Storage account names are globally unique across all of Azure, not just your subscription. I had to add some digits to the end before it would accept mine.
 
-Storage account names are globally unique across all of Azure, not just your subscription. I had to add some numbers to the end before it would accept mine.
+**The `$web` container is hidden by default**
 
-</details>
+Until you flip the **Static website** toggle to Enabled, the `$web` container doesn't exist. I spent a minute looking for it before I realized that's the order of operations: enable the feature first, *then* the container shows up.
 
-<details>
-<summary><strong>Changes don't show up after re-uploading</strong></summary>
+**Changes don't show up after re-uploading**
 
 Hard-refresh the browser (`Ctrl+F5` / `Cmd+Shift+R`). Both Azure and the browser cache, and I spent way too long thinking something was broken when I just needed to force a refresh.
-
-</details>
 
 ---
 
@@ -253,6 +261,18 @@ If you take *one* thing from this lab, let it be this: **delete your resource gr
 
 ---
 
+## 📷 Screenshots
+
+| # | Screenshot | What It Shows |
+| --- | --- | --- |
+| 01 | ![Resource Group](screenshots/01-resource-group.png) | The Resource Group after creation |
+| 02 | ![Storage Account](screenshots/02-storage-account.png) | Storage Account overview |
+| 03 | ![Static Website Enabled](screenshots/03-static-website-enabled.png) | Static website toggle set to Enabled, with index and error documents configured |
+| 04 | ![$web Container](screenshots/04-web-container.png) | The `$web` container with `index.html` uploaded |
+| 05 | ![Live Site](screenshots/05-live-site.png) | The live "Hello from the Cloud!" page in the browser |
+
+---
+
 ## 📚 References
 
 - [Static website hosting in Azure Storage — Microsoft Learn](https://learn.microsoft.com/azure/storage/blobs/storage-blob-static-website)
@@ -261,14 +281,11 @@ If you take *one* thing from this lab, let it be this: **delete your resource gr
 
 ---
 
-## 📷 Screenshots
+## 🗺️ The Build Log Series
 
-> _Adding screenshots here as I go, e.g.:_
-> - `/screenshots/01-resource-group.png`
-> - `/screenshots/02-storage-account.png`
-> - `/screenshots/03-static-website-enabled.png`
-> - `/screenshots/04-validation.png`
+- **Lab 001 — Azure Static Website Hosting** ← *you are here*
+- Lab 002 — *coming soon*
 
 ---
 
-_Part of my Cloud Security Engineer transition. Writing these up the way I'd want them written for me._
+*Part of my Cloud Security Engineer transition. Writing these up the way I'd want them written for me.*
