@@ -1,4 +1,4 @@
-# azure-static-website-lab
+# Azure Static Website Lab
 A hands-on lab demonstrating the setup and deployment of a static website inside Azure
 Markdown
 ## 🎬 Watch Me Build This Lab!
