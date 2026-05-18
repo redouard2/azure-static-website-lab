@@ -50,9 +50,9 @@ flowchart LR
     Net(("🌐 Internet"))
 
     subgraph Azure["☁️ Azure Subscription"]
-        subgraph RG["📦 Resource Group: rg-lab01"]
-            subgraph SA["🗄️ Storage Account: stlab01"]
-                Endpoint["🔗 Static Website Endpoint<br/>*.z13.web.core.windows.net"]
+        subgraph RG["📦 Resource Group: rg-lab01-redouard"]
+            subgraph SA["🗄️ Storage Account: stlab01redouard"]
+                Endpoint["🔗 Static Website Endpoint<br/>*.z5.web.core.windows.net"]
                 Web["📁 $web Container<br/>(Anonymous Read)"]
                 Index["📄 index.html"]
                 Err["📄 404.html"]
@@ -105,15 +105,17 @@ Walking through the flow:
 
 ## 🧾 Naming Convention I Used
 
-| Resource | Pattern | Example |
+| Resource | Pattern | What I Actually Used |
 | --- | --- | --- |
-| Resource Group | `rg-lab01-<yourname>` | `rg-lab01-ralph` |
-| Region | `East US` | — |
-| Storage Account | `stlab01<yourname><digits>` | `stlab01ralph42` |
-| Redundancy | `LRS` (Locally-Redundant Storage) | — |
-| Performance Tier | `Standard` | — |
+| Resource Group | `rg-lab01-<yourname>` | `rg-lab01-redouard` |
+| Region | Pick what's closest to you | `West US 2` |
+| Storage Account | `stlab01<yourname>` | `stlab01redouard` |
+| Redundancy | `LRS` (Locally-Redundant Storage) | `LRS` |
+| Performance Tier | `Standard` | `Standard` |
 
-> ⚠️ **Heads up on storage account names:** they have to be globally unique across *all* of Azure, lowercase letters and numbers only, 3–24 characters, no hyphens. Globally unique means *globally unique* — common names will already be taken. Plan on tacking on a few random digits at the end, even on your first attempt. Mine got rejected the first time and I had to add digits before Azure would accept it.
+> ⚠️ **Heads up on storage account names:** they have to be globally unique across *all* of Azure, lowercase letters and numbers only, 3–24 characters, no hyphens. Mine worked on the first try with just `stlab01redouard`, but if your name is common, plan on tacking on a few random digits as a fallback.
+>
+> 📍 **On region:** I used West US 2 because it's closest to me. Pick whichever region is closest to *you* — for a lab this small, it doesn't matter. For real production, region choice starts to matter for latency, data residency, and pricing.
 
 ---
 
@@ -126,7 +128,7 @@ Walking through the flow:
 3. Fill in:
    - **Subscription:** yours
    - **Resource group:** `rg-lab01-<yourname>`
-   - **Region:** `(US) East US`
+   - **Region:** whichever is closest to you
 4. **Review + create** → **Create**.
 
 ### Phase 2 — Create the Storage Account
@@ -134,12 +136,14 @@ Walking through the flow:
 1. Search **Storage accounts** → **+ Create**.
 2. On the **Basics** tab:
    - **Resource group:** `rg-lab01-<yourname>`
-   - **Storage account name:** `stlab01<yourname><digits>`
-   - **Region:** `(US) East US`
+   - **Storage account name:** `stlab01<yourname>` (add digits if rejected)
+   - **Region:** same as your resource group
    - **Performance:** `Standard`
    - **Redundancy:** `LRS`
 3. **Review + create** → **Create**.
 4. Once it's deployed, click **Go to resource**.
+
+![Storage Account](screenshots/01-storage-account.png)
 
 ### Phase 3 — Enable Static Website Hosting
 
@@ -149,7 +153,9 @@ Walking through the flow:
    - **Index document name:** `index.html`
    - **Error document path:** `404.html`
 4. Click **Save**.
-5. **Copy the Primary endpoint URL** that appears (mine looked like `https://stlab01<yourname><digits>.z13.web.core.windows.net/`). That's your site's public address.
+5. **Copy the Primary endpoint URL** that appears (mine was `https://stlab01redouard.z5.web.core.windows.net/`). That's your site's public address.
+
+![Static Website Enabled](screenshots/02-static-website-enabled.png)
 
 > 💡 I almost missed copying the URL the first time. Save it somewhere — you'll need it for the validation step.
 
@@ -181,11 +187,17 @@ I saved this as `index.html` on my desktop:
 2. There's already a container called `$web` sitting there — Azure made it for me when I enabled Static website. Open it.
 3. Click **Upload**, pick your `index.html`, **Upload**.
 
+![Containers](screenshots/03-containers.png)
+
+> 💡 You'll also see a `$logs` container. Azure creates that one automatically for service-level logging. We're not using it for this lab, but good to know it exists.
+
 ### Phase 6 — Test It
 
 1. New browser tab.
 2. Paste the Primary endpoint URL from Phase 3.
 3. "Hello from the Cloud!" 🎉
+
+![Live Site](screenshots/04-live-site.png)
 
 That's the whole site, live on the internet.
 
@@ -198,7 +210,7 @@ I'm still early on the cloud security side, so take these as observations rather
 - **The `$web` container is anonymous-read on purpose.** That's how the whole "public website" thing works, but it did make me pause — anyone on the internet can fetch what's in there. Fine for this lab, would not be fine for anything sensitive.
 - **Secure transfer required is enabled by default on new storage accounts** — worth confirming in the **Configuration** blade. That's also where you can enforce a minimum TLS version (1.2 is the modern baseline). Something I want to verify hands-on in a future lab.
 - **Storage account keys are powerful.** They're full account-wide credentials. I didn't need to use them for this lab, but it clicked for me why production environments push you toward Entra ID identities and SAS tokens instead.
-- **No logging by default.** If something weird happened with this storage account, I'd have no record of it unless I went and turned on diagnostic settings. Something I want to dig into in a future lab.
+- **No logging by default on the data plane.** Azure created the `$logs` container, but actual diagnostic logging for blob requests needs to be turned on separately under Diagnostic settings. Something I want to dig into in a future lab.
 - **The default endpoint has no WAF, no rate limiting, and no custom domain.** For a real site, you'd want Azure Front Door or a CDN in front of it.
 
 Things I want to come back to once I've got more reps in.
@@ -218,10 +230,6 @@ Starting **Lab 002**, I'm tracking the actual cost of every lab via the **Cost M
 **"404 — The requested content does not exist"**
 
 The file has to be named **exactly** `index.html`. Case-sensitive. `Index.html` won't load. And it has to be in the `$web` container, not a different one you made by accident.
-
-**"Storage account name is already taken"**
-
-Storage account names are globally unique across all of Azure, not just your subscription. I had to add some digits to the end before it would accept mine.
 
 **The `$web` container is hidden by default**
 
@@ -258,18 +266,6 @@ If you take *one* thing from this lab, let it be this: **delete your resource gr
 - **Naming conventions are not optional.** Even on Lab 01, consistent names made navigating the Portal much easier. I can already picture the chaos of mixed-up resources in a real environment.
 - "Serverless" doesn't mean "no responsibility." Azure handles the infrastructure, but the configuration, the content, and the access controls are still on me.
 - Coming from SysAdmin work, the biggest mental shift is letting go of the urge to manage *something*. Sometimes the right answer is to let the platform handle it.
-
----
-
-## 📷 Screenshots
-
-| # | Screenshot | What It Shows |
-| --- | --- | --- |
-| 01 | ![Resource Group](screenshots/01-resource-group.png) | The Resource Group after creation |
-| 02 | ![Storage Account](screenshots/02-storage-account.png) | Storage Account overview |
-| 03 | ![Static Website Enabled](screenshots/03-static-website-enabled.png) | Static website toggle set to Enabled, with index and error documents configured |
-| 04 | ![$web Container](screenshots/04-web-container.png) | The `$web` container with `index.html` uploaded |
-| 05 | ![Live Site](screenshots/05-live-site.png) | The live "Hello from the Cloud!" page in the browser |
 
 ---
 
