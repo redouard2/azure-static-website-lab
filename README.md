@@ -1,6 +1,6 @@
 # Azure Static Website Lab
 
-> **The Build Log — Lab 001 of [N]**
+> **The Build Log — Lab 001 of 12**
 > *Hosting a static website on Azure Blob Storage. No VM. No server to patch. Just files in a container and a public URL.*
 
 [![Cloud](https://img.shields.io/badge/Cloud-Azure-0078D4?logo=microsoftazure&logoColor=white)](#)
