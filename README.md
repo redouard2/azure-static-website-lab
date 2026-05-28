@@ -17,7 +17,8 @@
 
 ## 🎬 Watch Me Build This Lab
 
-[**▶ Loom walkthrough**](https://www.loom.com/share/81d2fb1b470245889aeacc0a9ee984e0)
+[**▶ Loom Walkthrough**](https://www.loom.com/share/81d2fb1b470245889aeacc0a9ee984e0)
+[**▶ Loom Overview**](https://www.loom.com/share/574b179b62f24972974a7d587860ca0b)
 
 ---
 
