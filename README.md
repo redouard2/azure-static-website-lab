@@ -281,7 +281,8 @@ If you take *one* thing from this lab, let it be this: **delete your resource gr
 ## 🗺️ The Build Log Series
 
 - **Lab 001 — Azure Static Website Hosting** ← *you are here*
-- Lab 002 — *coming soon*
+- [Lab 002 — Two-Tier Web Application](https://github.com/redouard2/azure-2tier-vnet-lab)
+- Lab 003 — *coming soon*
 
 ---
 
